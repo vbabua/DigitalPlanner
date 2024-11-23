@@ -55,12 +55,26 @@ def add_tabs_to_pdf(input_pdf="Golden spiral 2.pdf", output_pdf="output_with_tab
                 c.setFillColor(color)
                 c.rect(width - tab_width, y_position, tab_width, tab_height, fill=1)
 
-                # Add month text
+                # Add month text vertically
                 c.setFillColor(colors.black)
                 c.setFont("Helvetica", 8)
-                # Center the text in the tab
-                text_y = y_position + (tab_height/2) - 4  # Adjust the 4 points for better centering
-                c.drawString(width - tab_width + 5, text_y, month)
+                
+                # Save the canvas state
+                c.saveState()
+                
+                # Calculate center position for text
+                text_x = width - (tab_width/2) + 4  # Adjust the 4 points for better centering
+                text_y = y_position + (tab_height/2)
+                
+                # Rotate and position the text
+                c.translate(text_x, text_y)
+                c.rotate(90)
+                
+                # Draw the text centered
+                c.drawCentredString(0, 0, month)
+                
+                # Restore the canvas state
+                c.restoreState()
 
             c.save()
             packet.seek(0)
