@@ -104,6 +104,24 @@ def add_top_tabs(input_pdf="output_with_copies.pdf", output_pdf="output_with_tab
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return False
+from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2.generic import *
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+import io
+
+# Define tabs with more reliable icons
+TABS = {
+    'health': ('♥', 13),       # Heart icon
+    'finance': ('$', 14),      # Dollar icon
+    'wellness': ('☯', 15),     # Yin Yang icon
+    'nutrition': ('◈', 16),    # Diamond icon
+    'productivity': ('⚡', 17), # Lightning icon
+    'mental_health': ('∞', 18),# Infinity icon
+    'travel': ('✈', 19),       # Plane icon
+    'lifestyle': ('⌂', 20),    # House icon
+    'project': ('◎', 21)       # Target icon
+}
 
 def add_tab_visuals(input_pdf="output_with_tabs_top.pdf", output_pdf="final_output.pdf"):
     try:
@@ -127,15 +145,15 @@ def add_tab_visuals(input_pdf="output_with_tabs_top.pdf", output_pdf="final_outp
 
         # Define colors for tabs with stronger visibility
         tab_colors = [
-            colors.HexColor('#FF69B4'),  # Health - Hot pink
-            colors.HexColor('#32CD32'),  # Finance - Lime green
-            colors.HexColor('#4169E1'),  # Wellness - Royal blue
-            colors.HexColor('#9370DB'),  # Nutrition - Medium purple
-            colors.HexColor('#DAA520'),  # Productivity - Goldenrod
-            colors.HexColor('#9932CC'),  # Mental health - Dark orchid
-            colors.HexColor('#FF6347'),  # Travel - Tomato
-            colors.HexColor('#20B2AA'),  # Lifestyle - Light sea green
-            colors.HexColor('#CD853F'),  # Project - Peru
+            colors.HexColor('#FF4B4B'),  # Health - Bright red
+            colors.HexColor('#4CAF50'),  # Finance - Material green
+            colors.HexColor('#2196F3'),  # Wellness - Material blue
+            colors.HexColor('#9C27B0'),  # Nutrition - Material purple
+            colors.HexColor('#FF9800'),  # Productivity - Material orange
+            colors.HexColor('#673AB7'),  # Mental health - Deep purple
+            colors.HexColor('#E91E63'),  # Travel - Material pink
+            colors.HexColor('#009688'),  # Lifestyle - Teal
+            colors.HexColor('#795548'),  # Project - Brown
         ]
 
         # Draw tabs and icons
@@ -148,14 +166,19 @@ def add_tab_visuals(input_pdf="output_with_tabs_top.pdf", output_pdf="final_outp
             c.setLineWidth(0.5)
             c.rect(x_position, height - tab_height, tab_width, tab_height, fill=1, stroke=1)
             
-            # Add icon and text
-            c.setFillColor(colors.white)  # White text for better contrast
-            c.setFont("Helvetica-Bold", 8)  # Bold font for better visibility
-            # Draw icon
-            c.drawString(x_position + 5, height - tab_height/1.5, icon)
-            # Draw text below icon
-            text = tab_name[:8]  # Allow slightly longer text
-            c.drawString(x_position + 2, height - tab_height + 5, text)
+            # Add icon
+            c.setFillColor(colors.white)
+            c.setFont("Helvetica-Bold", 14)  # Larger size for icon
+            icon_width = c.stringWidth(icon, "Helvetica-Bold", 14)
+            icon_x = x_position + (tab_width - icon_width) / 2
+            c.drawString(icon_x, height - tab_height/1.5, icon)
+            
+            # Add text
+            c.setFont("Helvetica-Bold", 6)  # Smaller size for text
+            text = tab_name[:8]
+            text_width = c.stringWidth(text, "Helvetica-Bold", 6)
+            text_x = x_position + (tab_width - text_width) / 2
+            c.drawString(text_x, height - tab_height + 3, text)
 
         c.save()
         packet.seek(0)
@@ -179,6 +202,8 @@ def add_tab_visuals(input_pdf="output_with_tabs_top.pdf", output_pdf="final_outp
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return False
+
+# [Previous add_top_tabs function remains the same]
 
 if __name__ == "__main__":
     print("Adding clickable top tabs and visuals...")
