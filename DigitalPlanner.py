@@ -42,19 +42,30 @@ def add_tabs_to_pdf(input_pdf="Golden spiral 2.pdf", output_pdf="output_with_tab
             c = canvas.Canvas(packet, pagesize=(width, height))
 
             # Tab dimensions
-            tab_width = 40
+            tab_width = 15
             usable_height = height - top_margin
-            tab_height = usable_height / 12  # Divide the remaining height by number of months
+            tab_height = usable_height / 12
+            border_width = 1  # Width of the white border
 
-            # Add tabs
+            # First draw all colored rectangles
             for i, (month, color) in enumerate(month_colors.items()):
-                # Calculate position for current tab
                 y_position = height - top_margin - ((i + 1) * tab_height)
                 
-                # Draw tab rectangle
+                # Draw colored rectangle
                 c.setFillColor(color)
-                c.rect(width - tab_width, y_position, tab_width, tab_height, fill=1)
+                c.rect(width - tab_width, y_position, tab_width, tab_height, fill=1, stroke=0)
 
+            # Then draw white borders between tabs
+            c.setStrokeColor(colors.white)
+            c.setLineWidth(border_width)
+            for i in range(1, 12):  # Draw lines between tabs
+                y_position = height - top_margin - (i * tab_height)
+                c.line(width - tab_width, y_position, width, y_position)
+
+            # Finally add the text
+            for i, (month, color) in enumerate(month_colors.items()):
+                y_position = height - top_margin - ((i + 1) * tab_height)
+                
                 # Add month text vertically
                 c.setFillColor(colors.black)
                 c.setFont("Helvetica", 8)
@@ -63,12 +74,12 @@ def add_tabs_to_pdf(input_pdf="Golden spiral 2.pdf", output_pdf="output_with_tab
                 c.saveState()
                 
                 # Calculate center position for text
-                text_x = width - (tab_width/2) + 4  # Adjust the 4 points for better centering
+                text_x = width - (tab_width/2) - 4
                 text_y = y_position + (tab_height/2)
                 
                 # Rotate and position the text
                 c.translate(text_x, text_y)
-                c.rotate(90)
+                c.rotate(-90)
                 
                 # Draw the text centered
                 c.drawCentredString(0, 0, month)
